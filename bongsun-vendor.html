@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏢</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봉선회관 — 업체 포털</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Noto+Serif+KR:wght@300;400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0c0b;--bg2:#161210;--surface:#1e1a16;--border:#2c2825;--border2:#3e3628;
+  --blue:#c5a986;--blue2:#d4bc9a;--blue3:#e0c89a;
+  --gold:#c5a986;--gold2:#e0c89a;--gold-dim:#6a5030;
+  --text:#f0e8d8;--mid:#c0a882;--dim:#7a6448;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-weight:300;min-height:100vh;}
+button,input,select,textarea{font-family:'Montserrat',sans-serif;font-weight:300;}
+
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(ellipse 60% 60% at 30% 40%,rgba(197,169,134,.1) 0%,transparent 60%),var(--bg);}
+.login-box{width:100%;max-width:400px;border:1px solid var(--border);background:var(--surface);padding:48px 40px;}
+.login-logo{text-align:center;margin-bottom:36px;}
+.login-mark{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;background:var(--blue);font-family:'Playfair Display',serif;font-size:22px;font-style:italic;font-weight:400;color:var(--gold);margin-bottom:12px;}
+.login-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:var(--gold2);}
+.login-sub{font-size:10px;letter-spacing:.25em;color:var(--dim);margin-top:4px;text-transform:uppercase;}
+.login-err{background:rgba(26,95,160,.15);border:1px solid rgba(26,95,160,.3);color:var(--blue3);font-size:11px;padding:10px 14px;margin-bottom:16px;display:none;}
+.f{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+label{font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;}
+input[type=text],input[type=password]{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:12px 14px;outline:none;width:100%;transition:border-color .2s;-webkit-appearance:none;border-radius:0;}
+input:focus{border-color:var(--blue2);}
+.btn-login{width:100%;background:transparent;border:1px solid var(--gold);color:var(--gold);font-size:10px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;padding:15px;cursor:pointer;transition:background .2s;margin-top:8px;}
+.btn-login:hover{background:var(--gold);color:var(--bg);}
+
+.portal{display:none;}
+.portal-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;}
+.pnav-mark{width:32px;height:32px;border:1px solid var(--gold);background:transparent;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-style:italic;font-weight:400;color:var(--gold);}
+.pnav-name{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold2);margin-left:12px;}
+.pnav-user{font-size:11px;color:var(--dim);letter-spacing:.08em;}
+.btn-sm{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:10px;letter-spacing:.15em;padding:8px 16px;cursor:pointer;transition:all .15s;text-transform:uppercase;}
+.btn-sm:hover{border-color:var(--gold);color:var(--gold2);}
+.btn-sm.ok{color:var(--gold2);border-color:var(--gold-dim);}
+.btn-sm.danger{color:#e05050;}
+
+.portal-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;overflow-x:auto;scrollbar-width:none;}
+.portal-tabs::-webkit-scrollbar{display:none;}
+.ptab{flex-shrink:0;background:transparent;border:none;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);padding:0 16px;height:38px;cursor:pointer;transition:all .2s;position:relative;white-space:nowrap;}
+.ptab::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:1.5px;background:var(--gold);transform:scaleX(0);transition:transform .2s;}
+.ptab.on{color:var(--gold2);}.ptab.on::after{transform:scaleX(1);}
+
+.portal-body{max-width:800px;margin:0 auto;padding:32px 24px 80px;}
+.ppanel{display:none;}.ppanel.on{display:block;}
+.sec-lbl{font-size:10px;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.sec{margin-bottom:36px;}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-bottom:28px;}
+.stat{background:var(--surface);padding:18px;text-align:center;}
+.stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:400;color:var(--gold2);}
+.stat-lbl{font-size:10px;letter-spacing:.15em;color:var(--dim);text-transform:uppercase;margin-top:3px;}
+
+.badge{display:inline-block;font-size:10px;padding:4px 10px;}
+.b-wait{background:rgba(200,146,42,.1);color:var(--gold);border:1px solid rgba(200,146,42,.3);}
+.b-done{background:rgba(76,175,80,.1);color:#6abf6e;border:1px solid rgba(76,175,80,.3);}
+.b-act{background:rgba(26,95,160,.15);color:var(--blue3);border:1px solid rgba(26,95,160,.3);}
+
+.order-item{padding:16px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;}
+.order-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.order-title{font-size:15px;color:var(--text);}
+.order-date{font-size:12px;color:var(--dim);}
+.order-body{font-size:12px;color:var(--mid);line-height:1.8;}
+.order-actions{margin-top:12px;display:flex;gap:8px;}
+
+.deliver-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--surface);border:1px solid var(--border);margin-bottom:4px;}
+.deliver-info{font-size:14px;color:var(--mid);}
+.deliver-amt{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold2);}
+
+.form-box{background:var(--surface);border:1px solid var(--border);padding:24px;margin-bottom:20px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mb12{margin-bottom:12px;}.mb20{margin-bottom:20px;}
+input[type=text],input[type=number],input[type=date]{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:11px 13px;outline:none;width:100%;-webkit-appearance:none;border-radius:0;}
+input:focus{border-color:var(--blue2);}
+textarea{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:11px 13px;outline:none;width:100%;resize:vertical;min-height:68px;line-height:1.8;border-radius:0;}
+textarea:focus{border-color:var(--blue2);}
+select{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:11px 13px;outline:none;width:100%;-webkit-appearance:none;border-radius:0;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%233a4860'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.btn{background:transparent;border:1px solid var(--gold);color:var(--gold);font-size:11px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;padding:11px 22px;cursor:pointer;transition:background .2s;}
+.btn:hover{background:var(--gold);color:var(--bg);}
+.empty{text-align:center;padding:44px;color:var(--dim);font-size:13px;border:1px dashed var(--border);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-mark">B</div>
+      <div class="login-title">업체 포털</div>
+      <div class="login-sub">Bongsun Vendor Portal</div>
+    </div>
+    <div class="login-err" id="loginErr">업체명 또는 PIN이 올바르지 않습니다</div>
+    <div class="f"><label>업체명</label><input type="text" id="loginName" placeholder="봉선식자재" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="f"><label>PIN (4자리)</label><input type="password" id="loginPin" placeholder="••••" maxlength="4" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-login" onclick="doLogin()">로그인</button>
+    <div style="margin-top:20px;text-align:center;font-size:10px;color:var(--dim)">PIN은 봉선회관 담당자에게 문의하세요</div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div class="portal" id="portalWrap">
+  <div class="portal-nav">
+    <div style="display:flex;align-items:center">
+      <div class="pnav-mark">B</div>
+      <div class="pnav-name" id="vendorPortalName"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="pnav-user">업체 포털</span>
+      <button class="btn-sm danger" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+  <div class="portal-tabs">
+    <button class="ptab on" onclick="PT('home')">🏠 홈</button>
+    <button class="ptab" onclick="PT('orders')">📦 발주 현황</button>
+    <button class="ptab" onclick="PT('deliver')">🚚 납품 보고</button>
+    <button class="ptab" onclick="PT('history')">📋 거래 내역</button>
+    <button class="ptab" onclick="PT('request')">✉️ 문의·요청</button>
+  </div>
+  <div class="portal-body">
+
+    <!-- HOME -->
+    <div class="ppanel on" id="pp-home">
+      <div class="stat-row" id="vdStatRow"></div>
+      <div class="sec">
+        <div class="sec-lbl">최근 발주 요청</div>
+        <div id="recentOrders"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-lbl">납품 대기</div>
+        <div id="pendingDelivers"></div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="ppanel" id="pp-orders">
+      <div class="sec">
+        <div class="sec-lbl">전체 발주 현황</div>
+        <div id="allOrders"></div>
+      </div>
+    </div>
+
+    <!-- DELIVER -->
+    <div class="ppanel" id="pp-deliver">
+      <div class="sec">
+        <div class="sec-lbl">납품 완료 보고</div>
+        <div class="form-box">
+          <div class="g2 mb12">
+            <div class="f"><label>납품일</label><input type="date" id="dlvDate"></div>
+            <div class="f"><label>품목</label><input type="text" id="dlvItem" placeholder="소고기 등심 10kg 외"></div>
+          </div>
+          <div class="g2 mb12">
+            <div class="f"><label>금액 (원)</label><input type="number" id="dlvAmt" placeholder="0"></div>
+            <div class="f"><label>상태</label><select id="dlvStatus"><option>납품완료</option><option>부분납품</option><option>납품불가</option></select></div>
+          </div>
+          <div class="f mb20"><label>비고</label><textarea id="dlvNote" placeholder="특이사항, 다음 납품 일정 등"></textarea></div>
+          <button class="btn" onclick="addDelivery()">납품 보고 등록</button>
+        </div>
+        <div class="sec-lbl" style="margin-top:24px">납품 내역</div>
+        <div id="deliverList"></div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="ppanel" id="pp-history">
+      <div class="sec">
+        <div class="sec-lbl">거래 내역</div>
+        <div id="historyList"></div>
+      </div>
+    </div>
+
+    <!-- REQUEST -->
+    <div class="ppanel" id="pp-request">
+      <div class="sec">
+        <div class="sec-lbl">문의·요청</div>
+        <div class="form-box">
+          <div class="f mb12"><label>유형</label><select id="reqType"><option>단가 변경 안내</option><option>납품 일정 변경</option><option>품목 추가</option><option>기타 문의</option></select></div>
+          <div class="f mb20"><label>내용</label><textarea id="reqContent" placeholder="문의 내용을 입력하세요"></textarea></div>
+          <button class="btn" onclick="addRequest()">문의 전송</button>
+        </div>
+        <div class="sec-lbl" style="margin-top:24px">문의 내역</div>
+        <div id="reqList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var currentVendor = null;
+
+// Wix 브릿지
+var _wixMode=false;
+var _pending={};
+var _storeData={vendors:[]};
+
+function wixSend(type,payload){
+  return new Promise(function(resolve,reject){
+    if(!_wixMode){resolve(null);return;}
+    var reqId=Date.now()+'_'+Math.random().toString(36).slice(2);
+    _pending[reqId]={resolve:resolve,reject:reject};
+    window.parent.postMessage({type:type,payload:payload,reqId:reqId},'*');
+    setTimeout(function(){if(_pending[reqId]){delete _pending[reqId];reject(new Error('timeout'));}},10000);
+  });
+}
+
+window.addEventListener('message',function(e){
+  var d=e.data;
+  if(d.type==='VENDOR_INIT'){
+    _wixMode=true;
+    _storeData.vendors=d.data.vendors||[];
+    return;
+  }
+  if((d.type==='RESPONSE'||d.type==='ERROR')&&d.reqId&&_pending[d.reqId]){
+    var cb=_pending[d.reqId];delete _pending[d.reqId];
+    if(d.type==='ERROR')cb.reject(new Error(d.error));
+    else cb.resolve(d.data);
+  }
+});
+
+
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch{return d;}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
+
+async function doLogin(){
+  var name = document.getElementById('loginName').value.trim();
+  var pin  = document.getElementById('loginPin').value.trim();
+  if(!name||!pin){showErr();return;}
+  var vendors=_wixMode?_storeData.vendors:ld('bs_vd',[]);
+  if(_wixMode&&!vendors.length){try{var _vr=await wixSend('GET_VENDORS',null);if(_vr)vendors=_vr;}catch(e){}}
+  var found=vendors.find(function(v){ return v.name===name && v.pin===pin; });
+  if(!found){showErr();return;}
+  currentVendor = found;
+  sv('bs_vendor_session', found);
+  showPortal();
+}
+
+function showErr(){
+  document.getElementById('loginErr').style.display='block';
+  setTimeout(function(){document.getElementById('loginErr').style.display='none';},3000);
+}
+function doLogout(){
+  currentVendor=null; sv('bs_vendor_session',null);
+  document.getElementById('portalWrap').style.display='none';
+  document.getElementById('loginWrap').style.display='flex';
+}
+function showPortal(){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('portalWrap').style.display='block';
+  document.getElementById('vendorPortalName').textContent = currentVendor.name;
+  renderAll();
+}
+function PT(id){
+  document.querySelectorAll('.ppanel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ptab').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('pp-'+id).classList.add('on');
+  var tabs=['home','orders','deliver','history','request'];
+  var i=tabs.indexOf(id);if(i>=0)document.querySelectorAll('.ptab')[i].classList.add('on');
+}
+function renderAll(){ renderHome(); renderOrders(); renderDelivers(); renderHistory(); renderReqs(); }
+
+function getOrders(){ return ld('bs_vd_orders_'+currentVendor.id,[]); }
+function getDelivers(){ return ld('bs_vd_delivers_'+currentVendor.id,[]); }
+function getReqs(){ return ld('bs_vd_reqs_'+currentVendor.id,[]); }
+
+function renderHome(){
+  var orders = getOrders(), delivers = getDelivers();
+  var pending = orders.filter(function(o){return o.status==='대기';}).length;
+  var totalAmt = delivers.reduce(function(s,d){return s+(Number(d.amt)||0);},0);
+  document.getElementById('vdStatRow').innerHTML =
+    stat(orders.length,'발주 건수') +
+    stat(pending,'대기 중') +
+    stat(totalAmt.toLocaleString()+'원','누적 거래액');
+
+  var recent = orders.slice(-3).reverse();
+  document.getElementById('recentOrders').innerHTML = recent.length
+    ? recent.map(orderHTML).join('')
+    : '<div class="empty">발주 요청이 없습니다</div>';
+
+  var pend = orders.filter(function(o){return o.status==='대기';});
+  document.getElementById('pendingDelivers').innerHTML = pend.length
+    ? pend.map(orderHTML).join('')
+    : '<div class="empty">납품 대기 항목이 없습니다</div>';
+}
+
+function orderHTML(o){
+  return '<div class="order-item">'
+    +'<div class="order-top"><span class="order-title">'+escH(o.item||'발주 요청')+'</span>'
+    +'<span class="badge '+(o.status==='완료'?'b-done':o.status==='대기'?'b-wait':'b-act')+'">'+o.status+'</span></div>'
+    +'<div class="order-date">'+o.date+'</div>'
+    +'<div class="order-body">'+(o.note||'')+'</div>'
+    +'<div class="order-actions">'
+    +(o.status==='대기'?'<button class="btn-sm" onclick="confirmOrder('+o.id+')">납품 확인</button>':'')
+    +'</div></div>';
+}
+
+function confirmOrder(id){
+  var orders = getOrders();
+  var o = orders.find(function(x){return x.id===id;});
+  if(o){o.status='확인완료';sv('bs_vd_orders_'+currentVendor.id,orders);renderAll();showToast('확인 처리됨');}
+}
+
+function renderOrders(){
+  var orders = getOrders();
+  document.getElementById('allOrders').innerHTML = orders.length
+    ? [...orders].reverse().map(orderHTML).join('')
+    : '<div class="empty">발주 내역이 없습니다</div>';
+}
+
+async function addDelivery(){
+  var item=document.getElementById('dlvItem').value.trim();
+  if(!item)return alert('품목을 입력하세요');
+  var delivers = getDelivers();
+  delivers.push({id:Date.now(),date:document.getElementById('dlvDate').value,item:item,amt:document.getElementById('dlvAmt').value,status:document.getElementById('dlvStatus').value,note:document.getElementById('dlvNote').value.trim()});
+  if(_wixMode){wixSend('SAVE_DELIVERY',delivers[delivers.length-1]).catch(function(){});}
+  sv('bs_vd_delivers_'+currentVendor.id,delivers);
+  document.getElementById('dlvItem').value='';document.getElementById('dlvAmt').value='';document.getElementById('dlvNote').value='';
+  renderDelivers();renderHistory();renderHome();showToast('납품 보고 등록됨');
+}
+function renderDelivers(){
+  var list = getDelivers();
+  document.getElementById('deliverList').innerHTML = list.length
+    ? [...list].reverse().map(function(d){
+        return '<div class="deliver-item"><div class="deliver-info">'+d.date+' · '+escH(d.item)+'<br><span style="font-size:10px;color:var(--dim)">'+(d.note||'')+'</span></div>'
+          +'<div style="text-align:right"><div class="deliver-amt">'+(d.amt?Number(d.amt).toLocaleString()+'원':'—')+'</div>'
+          +'<span class="badge '+(d.status==='납품완료'?'b-done':'b-wait')+'">'+d.status+'</span></div></div>';
+      }).join('')
+    : '<div class="empty">납품 내역이 없습니다</div>';
+}
+function renderHistory(){
+  var delivers = getDelivers(), orders = getOrders();
+  var all = [...delivers.map(function(d){return{date:d.date,type:'납품',desc:d.item,amt:d.amt,status:d.status};}),
+             ...orders.map(function(o){return{date:o.date,type:'발주',desc:o.item||'발주 요청',amt:'—',status:o.status};})];
+  all.sort(function(a,b){return(b.date||'')>(a.date||'')?1:-1;});
+  document.getElementById('historyList').innerHTML = all.length
+    ? all.map(function(x){
+        return '<div class="deliver-item"><div class="deliver-info">['+x.type+'] '+escH(x.desc)+'<br><span style="font-size:10px;color:var(--dim)">'+x.date+'</span></div>'
+          +'<div style="text-align:right"><div class="deliver-amt">'+(x.amt&&x.amt!=='—'?Number(x.amt).toLocaleString()+'원':x.amt)+'</div>'
+          +'<span class="badge '+(x.status==='납품완료'||x.status==='완료'?'b-done':'b-wait')+'">'+x.status+'</span></div></div>';
+      }).join('')
+    : '<div class="empty">거래 내역이 없습니다</div>';
+}
+async function addRequest(){
+  var content = document.getElementById('reqContent').value.trim();
+  if(!content)return alert('내용을 입력하세요');
+  var reqs = getReqs();
+  reqs.push({id:Date.now(),type:document.getElementById('reqType').value,content:content,date:new Date().toISOString().slice(0,10),status:'접수됨'});
+  sv('bs_vd_reqs_'+currentVendor.id,reqs);
+  document.getElementById('reqContent').value='';renderReqs();showToast('문의가 전송되었습니다');
+}
+function renderReqs(){
+  var reqs = getReqs();
+  document.getElementById('reqList').innerHTML = reqs.length
+    ? [...reqs].reverse().map(function(r){
+        return '<div class="order-item"><div class="order-top"><span class="order-title">'+r.type+'</span><span class="badge b-act">'+r.status+'</span></div>'
+          +'<div class="order-date">'+r.date+'</div><div class="order-body">'+escH(r.content)+'</div></div>';
+      }).join('')
+    : '<div class="empty">문의 내역이 없습니다</div>';
+}
+function stat(val,lbl){return '<div class="stat"><div class="stat-val">'+val+'</div><div class="stat-lbl">'+lbl+'</div></div>';}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function showToast(msg){
+  var t=document.getElementById('_toast');
+  if(!t){t=document.createElement('div');t.id='_toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);font-size:11px;letter-spacing:.15em;padding:11px 22px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0';},2500);
+}
+window.addEventListener('load',function(){
+  var session=ld('bs_vendor_session',null);
+  if(session&&session.name){currentVendor=session;showPortal();}
+  document.getElementById('dlvDate').value=new Date().toISOString().slice(0,10);
+});
+</script>
+</body>
+</html>

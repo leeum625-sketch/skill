@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👥</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봉선회관 — 직원 포털</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Noto+Serif+KR:wght@300;400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0c0b;--bg2:#161210;--surface:#1e1a16;--border:#2c2825;--border2:#3e3628;
+  --red:#c5a986;--red2:#d4bc9a;--gold:#c5a986;--gold2:#e0c89a;--gold-dim:#6a5030;
+  --text:#f0e8d8;--mid:#c0a882;--dim:#7a6448;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-weight:300;min-height:100vh;}
+button,input,select,textarea{font-family:'Montserrat',sans-serif;font-weight:300;}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(ellipse 60% 60% at 30% 40%,rgba(197,169,134,.1) 0%,transparent 60%),var(--bg);}
+.login-box{width:100%;max-width:400px;border:1px solid var(--border);background:var(--surface);padding:48px 40px;}
+.login-logo{text-align:center;margin-bottom:36px;}
+.login-mark{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;background:var(--red);font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:12px;}
+.login-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold2);}
+.login-sub{font-size:10px;letter-spacing:.25em;color:var(--dim);margin-top:4px;text-transform:uppercase;}
+.login-err{background:rgba(192,24,12,.15);border:1px solid rgba(192,24,12,.3);color:var(--red2);font-size:11px;padding:10px 14px;margin-bottom:16px;display:none;}
+.f{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+label{font-size:9px;letter-spacing:.28em;color:var(--dim);text-transform:uppercase;}
+input[type=text],input[type=password]{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:12px 14px;outline:none;width:100%;transition:border-color .2s;-webkit-appearance:none;border-radius:0;}
+input:focus{border-color:var(--red);}
+.btn-login{width:100%;background:var(--red);border:none;color:#fff;font-size:10px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;padding:15px;cursor:pointer;transition:background .2s;margin-top:8px;}
+.btn-login:hover{background:var(--red2);}
+
+/* PORTAL */
+.portal{display:none;}
+.portal-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;}
+.pnav-logo{display:flex;align-items:center;gap:10px;}
+.pnav-mark{width:28px;height:28px;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;}
+.pnav-name{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold2);}
+.pnav-user{font-size:10px;color:var(--dim);letter-spacing:.1em;}
+.btn-sm{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:9px;letter-spacing:.2em;padding:6px 14px;cursor:pointer;transition:all .15s;text-transform:uppercase;}
+.btn-sm:hover{border-color:var(--red);color:var(--gold2);}
+.btn-sm.ok{color:var(--gold2);border-color:var(--gold-dim);}
+.btn-sm.danger{color:var(--red);}
+
+.portal-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;gap:0;overflow-x:auto;scrollbar-width:none;}
+.portal-tabs::-webkit-scrollbar{display:none;}
+.ptab{flex-shrink:0;background:transparent;border:none;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);padding:0 16px;height:38px;cursor:pointer;transition:all .2s;position:relative;white-space:nowrap;}
+.ptab::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:2px;background:var(--red);transform:scaleX(0);transition:transform .2s;}
+.ptab.on{color:var(--gold2);}.ptab.on::after{transform:scaleX(1);}
+
+.portal-body{max-width:800px;margin:0 auto;padding:32px 24px 80px;}
+.ppanel{display:none;}.ppanel.on{display:block;}
+
+.sec-lbl{font-size:9px;letter-spacing:.45em;color:var(--red);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.sec{margin-bottom:36px;}
+
+/* CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-bottom:28px;}
+.stat{background:var(--surface);padding:18px;text-align:center;}
+.stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:400;color:var(--gold);}
+.stat-lbl{font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-top:3px;}
+
+.task-item{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);margin-bottom:4px;transition:border-color .15s;}
+.task-item:hover{border-color:var(--border2);}
+.task-cat{font-size:9px;letter-spacing:.1em;color:var(--red2);flex-shrink:0;width:60px;text-transform:uppercase;}
+.task-txt{font-size:12px;color:var(--mid);flex:1;}
+.badge{display:inline-block;font-size:10px;padding:4px 10px;}
+.b-wait{background:rgba(200,146,42,.1);color:var(--gold);border:1px solid rgba(200,146,42,.3);}
+.b-act{background:rgba(192,24,12,.1);color:var(--red2);border:1px solid rgba(192,24,12,.3);}
+.b-done{background:rgba(76,175,80,.1);color:#6abf6e;border:1px solid rgba(76,175,80,.3);}
+
+.sch-item{display:grid;grid-template-columns:100px 1fr 120px;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);margin-bottom:4px;align-items:center;}
+.sch-date{font-size:14px;color:var(--gold2);}
+.sch-shift{font-size:14px;color:var(--mid);}
+.sch-status{font-size:10px;color:var(--dim);text-align:right;}
+
+.pay-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--surface);border:1px solid var(--border);margin-bottom:4px;}
+.pay-info{font-size:12px;color:var(--mid);}
+.pay-amt{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold2);}
+
+.empty{text-align:center;padding:36px;color:var(--dim);font-size:12px;border:1px dashed var(--border);}
+
+/* NEW TASK FORM */
+.form-box{background:var(--surface);border:1px solid var(--border);padding:24px;margin-bottom:20px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mb12{margin-bottom:12px;}.mb20{margin-bottom:20px;}
+select{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:11px 13px;outline:none;width:100%;-webkit-appearance:none;border-radius:0;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23604030'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+select:focus{border-color:var(--red);}
+textarea{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:11px 13px;outline:none;width:100%;resize:vertical;min-height:68px;line-height:1.8;border-radius:0;}
+textarea:focus{border-color:var(--red);}
+.btn{background:var(--red);border:none;color:#fff;font-size:10px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;padding:11px 22px;cursor:pointer;transition:background .2s;}
+.btn:hover{background:var(--red2);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-mark">봉</div>
+      <div class="login-title">직원 포털</div>
+      <div class="login-sub">Bongsun Staff Portal</div>
+    </div>
+    <div class="login-err" id="loginErr">이름 또는 PIN이 올바르지 않습니다</div>
+    <div class="f"><label>이름</label><input type="text" id="loginName" placeholder="홍길동" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="f"><label>PIN (4자리)</label><input type="password" id="loginPin" placeholder="••••" maxlength="4" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-login" onclick="doLogin()">로그인</button>
+    <div style="margin-top:20px;text-align:center;font-size:10px;color:var(--dim)">PIN은 관리자에게 문의하세요</div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div class="portal" id="portalWrap">
+  <div class="portal-nav">
+    <div class="pnav-logo">
+      <div class="pnav-mark">봉</div>
+      <div><div class="pnav-name">봉선회관</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="pnav-user" id="portalUser"></span>
+      <button class="btn-sm danger" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+  <div class="portal-tabs">
+    <button class="ptab on" onclick="PT('home')">🏠 홈</button>
+    <button class="ptab" onclick="PT('tasks')">📋 업무</button>
+    <button class="ptab" onclick="PT('schedule')">📅 스케줄</button>
+    <button class="ptab" onclick="PT('pay')">💰 급여</button>
+    <button class="ptab" onclick="PT('add')">➕ 업무 추가</button>
+  </div>
+  <div class="portal-body">
+
+    <!-- HOME -->
+    <div class="ppanel on" id="pp-home">
+      <div class="stat-row" id="staffStatRow"></div>
+      <div class="sec">
+        <div class="sec-lbl">오늘 업무</div>
+        <div id="todayTasks"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-lbl">이번 주 스케줄</div>
+        <div id="weekSchedule"></div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="ppanel" id="pp-tasks">
+      <div class="sec">
+        <div class="sec-lbl">전체 업무 목록</div>
+        <div id="allTasks"></div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div class="ppanel" id="pp-schedule">
+      <div class="sec">
+        <div class="sec-lbl">출근 스케줄</div>
+        <div id="mySchedule"></div>
+      </div>
+    </div>
+
+    <!-- PAY -->
+    <div class="ppanel" id="pp-pay">
+      <div class="sec">
+        <div class="sec-lbl">급여 내역</div>
+        <div id="payList"></div>
+      </div>
+    </div>
+
+    <!-- ADD TASK -->
+    <div class="ppanel" id="pp-add">
+      <div class="sec">
+        <div class="sec-lbl">업무 추가 요청</div>
+        <div class="form-box">
+          <div class="g2 mb12">
+            <div class="f"><label>카테고리</label><select id="newTaskCat"><option>운영</option><option>고객응대</option><option>위생·청소</option><option>마케팅</option><option>재고·발주</option><option>기타</option></select></div>
+            <div class="f"><label>우선순위</label><select id="newTaskPri"><option>높음</option><option>보통</option><option>낮음</option></select></div>
+          </div>
+          <div class="f mb12"><label>업무 내용</label><textarea id="newTaskTxt" placeholder="추가할 업무 내용을 입력하세요"></textarea></div>
+          <div class="f mb20"><label>마감일</label><input type="date" id="newTaskDue" style="background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:13px;padding:11px 13px;outline:none;width:100%;border-radius:0;-webkit-appearance:none;"></div>
+          <button class="btn" onclick="addMyTask()">업무 추가</button>
+        </div>
+        <div class="sec-lbl" style="margin-top:24px">내가 추가한 업무</div>
+        <div id="myAddedTasks"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var currentStaff = null;
+
+var _wixMode=false;
+var _pending={};
+var _wixStaff=[];
+
+function wixSend(type,payload){
+  return new Promise(function(resolve,reject){
+    if(!_wixMode){resolve(null);return;}
+    var reqId=Date.now()+'_'+Math.random().toString(36).slice(2);
+    _pending[reqId]={resolve:resolve,reject:reject};
+    window.parent.postMessage({type:type,payload:payload,reqId:reqId},'*');
+    setTimeout(function(){if(_pending[reqId]){delete _pending[reqId];reject(new Error('timeout'));}},10000);
+  });
+}
+
+window.addEventListener('message',function(e){
+  var d=e.data;
+  if(d.type==='STAFF_INIT'){
+    _wixMode=true;
+    _wixStaff=d.data.staff||[];
+    var wb=document.getElementById('wixBadge');
+    if(wb){wb.textContent='WIXCMS ✓';wb.style.color='var(--gold)';}
+    return;
+  }
+  if((d.type==='RESPONSE'||d.type==='ERROR')&&d.reqId&&_pending[d.reqId]){
+    var cb=_pending[d.reqId];delete _pending[d.reqId];
+    if(d.type==='ERROR')cb.reject(new Error(d.error));
+    else cb.resolve(d.data);
+  }
+});
+
+
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch{return d;}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
+
+async function doLogin(){
+  var name = document.getElementById('loginName').value.trim();
+  var pin  = document.getElementById('loginPin').value.trim();
+  if(!name || !pin){ showErr(); return; }
+  // localStorage + Wix CMS 둘 다 확인
+  var staff = _wixMode && _wixStaff.length ? _wixStaff : ld('bs_st',[]);
+  if(_wixMode && !staff.length){
+    try{ var _sr=await wixSend('GET_STAFF',null); if(_sr)staff=_sr; }catch(e){}
+  }
+  var found = staff.find(function(s){
+    var sName = s.name || s.staffName || '';
+    return sName===name && s.pin===pin && (s.status==='active'||!s.status);
+  });
+  if(!found){ showErr(); return; }
+  // name 필드 통일
+  found = Object.assign({}, found, { name: found.name||found.staffName||name });
+  currentStaff = found;
+  sv('bs_staff_session', found);
+  showPortal();
+}
+
+function showErr(){
+  document.getElementById('loginErr').style.display='block';
+  setTimeout(function(){ document.getElementById('loginErr').style.display='none'; }, 3000);
+}
+
+function doLogout(){
+  currentStaff=null; sv('bs_staff_session',null);
+  document.getElementById('portalWrap').style.display='none';
+  document.getElementById('loginWrap').style.display='flex';
+}
+
+function showPortal(){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('portalWrap').style.display='block';
+  var _pu=document.getElementById('portalUser');if(_pu)_pu.textContent=(currentStaff.name||currentStaff.staffName||'') + ' · ' + (currentStaff.role||'');
+  renderAll();
+}
+
+function PT(id){
+  document.querySelectorAll('.ppanel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ptab').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('pp-'+id).classList.add('on');
+  var tabs=['home','tasks','schedule','pay','add'];
+  var i=tabs.indexOf(id);
+  if(i>=0) document.querySelectorAll('.ptab')[i].classList.add('on');
+}
+
+function renderAll(){
+  renderHome(); renderTasks(); renderSchedule(); renderPay(); renderMyTasks();
+}
+
+function renderHome(){
+  var myName=currentStaff.name||currentStaff.staffName||'';
+  var tasks  = ld('bs_tk',[]).filter(function(t){ return t.who===myName; });
+  var schs   = ld('bs_sch',[]).filter(function(s){ return s.who===myName; });
+  var done   = tasks.filter(function(t){ return t.status==='완료'; }).length;
+  var today  = new Date().toISOString().slice(0,10);
+
+  var _sr=document.getElementById('staffStatRow');if(_sr)_sr.innerHTML =
+    stat(tasks.length, '전체 업무') +
+    stat(done, '완료') +
+    stat(schs.filter(function(s){ return s.date>=today; }).length, '예정 출근');
+
+  var todayT = tasks.filter(function(t){ return t.due===today || !t.due; }).slice(0,5);
+  var _tt=document.getElementById('todayTasks');if(_tt)_tt.innerHTML = todayT.length
+    ? todayT.map(taskHTML).join('')
+    : '<div class="empty">오늘 업무가 없습니다</div>';
+
+  var weekEnd = new Date(); weekEnd.setDate(weekEnd.getDate()+7);
+  var weekS = schs.filter(function(s){ return s.date>=today && s.date<=weekEnd.toISOString().slice(0,10); });
+  var _ws=document.getElementById('weekSchedule');if(_ws)_ws.innerHTML = weekS.length
+    ? weekS.map(schHTML).join('')
+    : '<div class="empty">이번 주 스케줄이 없습니다</div>';
+}
+
+function renderTasks(){
+  var myN=currentStaff.name||currentStaff.staffName||'';
+  var tasks = ld('bs_tk',[]).filter(function(t){ return t.who===myN; });
+  var _at=document.getElementById('allTasks');if(_at)_at.innerHTML = tasks.length
+    ? tasks.map(function(t){ return taskHTML(t, true); }).join('')
+    : '<div class="empty">배정된 업무가 없습니다</div>';
+}
+
+function taskHTML(t, withToggle){
+  var badgeCls = t.status==='완료'?'b-done':t.status==='진행중'?'b-act':'b-wait';
+  return '<div class="task-item">'
+    +'<span class="task-cat">'+(t.cat||'운영')+'</span>'
+    +'<span class="task-txt">'+escH(t.txt)+(t.due?' <span style="color:var(--dim);font-size:10px">~'+t.due+'</span>':'')+'</span>'
+    +'<span class="badge '+badgeCls+'">'+t.status+'</span>'
+    +(withToggle
+      ? '<select style="font-size:9px;padding:3px 8px;border:1px solid var(--border);background:var(--surface);color:var(--dim);margin-left:6px" onchange="updateTask('+t.id+',this.value)">'
+        +'<option'+(t.status==='대기'?' selected':'')+'>대기</option>'
+        +'<option'+(t.status==='진행중'?' selected':'')+'>진행중</option>'
+        +'<option'+(t.status==='완료'?' selected':'')+'>완료</option></select>'
+      : '')
+    +'</div>';
+}
+
+async function updateTask(id, status){
+  var tasks = ld('bs_tk',[]);
+  var t = tasks.find(function(x){ return x.id===id; });
+  if(t){ t.status=status; sv('bs_tk',tasks); renderAll(); }
+}
+
+function renderSchedule(){
+  var myN2=currentStaff.name||currentStaff.staffName||'';
+  var schs = ld('bs_sch',[]).filter(function(s){ return s.who===myN2; });
+  schs.sort(function(a,b){ return (a.date||'')>(b.date||'')?1:-1; });
+  var _ms=document.getElementById('mySchedule');if(_ms)_ms.innerHTML = schs.length
+    ? schs.map(schHTML).join('')
+    : '<div class="empty">등록된 스케줄이 없습니다</div>';
+}
+
+function schHTML(s){
+  return '<div class="sch-item">'
+    +'<span class="sch-date">'+s.date+'</span>'
+    +'<span class="sch-shift">'+s.shift+'</span>'
+    +'<span class="sch-status badge '+(s.status==='출근'?'b-done':s.status==='결근'?'b-act':'b-wait')+'">'+s.status+'</span>'
+    +'</div>';
+}
+
+function renderPay(){
+  var s = currentStaff;
+  var myN3=s.name||s.staffName||'';
+  var schs = ld('bs_sch',[]).filter(function(x){ return x.who===myN3 && x.status==='출근'; });
+  var el = document.getElementById('payList');
+  if(!s.wage || !schs.length){
+    el.innerHTML='<div class="empty">급여 내역이 없습니다<br><span style="font-size:10px">출근 기록이 쌓이면 표시됩니다</span></div>';
+    return;
+  }
+  var mo = {};
+  schs.forEach(function(x){
+    var m = (x.date||'').slice(0,7);
+    var hrs = x.shift==='종일'?10:x.shift.includes('11:00 - 22:00')?10:x.shift.includes('11:00 - 15:00')?4:x.shift.includes('15:00 - 21:00')?6:x.shift.includes('17:00 - 22:00')?5:8;
+    mo[m]=(mo[m]||0)+hrs;
+  });
+  el.innerHTML = Object.entries(mo).sort(function(a,b){return b[0]>a[0]?1:-1;}).map(function(e){
+    var pay = s.wage * e[1];
+    return '<div class="pay-item"><div class="pay-info">'+e[0]+'월 · '+e[1]+'시간 근무</div><div class="pay-amt">'+pay.toLocaleString()+'원</div></div>';
+  }).join('');
+}
+
+async function addMyTask(){
+  var txt = document.getElementById('newTaskTxt').value.trim();
+  if(!txt) return alert('업무 내용을 입력하세요');
+  var tasks = ld('bs_tk',[]);
+  tasks.push({
+    id: Date.now(), who: currentStaff.name||currentStaff.staffName||'', whoRole: currentStaff.role||'',
+    txt: txt, due: document.getElementById('newTaskDue').value,
+    pri: document.getElementById('newTaskPri').value,
+    cat: document.getElementById('newTaskCat').value,
+    status: '대기', addedBy: 'self'
+  });
+  sv('bs_tk', tasks);
+  document.getElementById('newTaskTxt').value='';
+  renderMyTasks(); renderTasks(); renderHome();
+  showToast('업무가 추가되었습니다');
+}
+
+function renderMyTasks(){
+  var myN4=currentStaff.name||currentStaff.staffName||'';
+  var tasks = ld('bs_tk',[]).filter(function(t){ return t.who===myN4 && t.addedBy==='self'; });
+  var _ma=document.getElementById('myAddedTasks');if(_ma)_ma.innerHTML = tasks.length
+    ? tasks.map(function(t){ return taskHTML(t, true); }).join('')
+    : '<div class="empty">직접 추가한 업무가 없습니다</div>';
+}
+
+function stat(val, lbl){
+  return '<div class="stat"><div class="stat-val">'+val+'</div><div class="stat-lbl">'+lbl+'</div></div>';
+}
+function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg){
+  var t=document.getElementById('_toast');
+  if(!t){t=document.createElement('div');t.id='_toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-size:11px;letter-spacing:.15em;padding:11px 22px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0';},2500);
+}
+
+window.addEventListener('load', function(){
+  var session = ld('bs_staff_session', null);
+  if(session && session.name){
+    currentStaff = session;
+    showPortal();
+  }
+  var today = new Date().toISOString().slice(0,10);
+  document.getElementById('newTaskDue').value = today;
+
+  // Wix에 준비 완료 신호
+  setTimeout(function(){
+    try{ window.parent.postMessage({type:'IFRAME_READY'},'*'); }catch(e){}
+  }, 500);
+});
+</script>
+</body>
+</html>
